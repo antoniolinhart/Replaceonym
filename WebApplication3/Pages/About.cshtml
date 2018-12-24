@@ -1,0 +1,41 @@
+﻿@page
+@model AboutModel
+@{
+    ViewData["Title"] = "About";
+}
+<h2>@ViewData["Title"]</h2>
+<h3>@Model.Message</h3>
+
+<p>Use this area to provide additional information.</p>
+@{
+    var greeting = "Welcome to our site!";
+    var weekDay = DateTime.Now.DayOfWeek;
+    var greetingMessage = greeting + " Today is: " + weekDay;
+}
+<p>The greeting is: @greetingMessage</p>
+
+<form action="" method="post">
+    <p>
+        <label for="text1">Text:</label><br>
+        <input type="text" name="text1">
+    </p>
+    <p><input type="submit" value=" Submit "></p>
+</form>
+
+<h1>@Model.text</h1>
+@{ List<List<string>> words = Model.test;}
+<ul>
+    @foreach (var x in words)
+    {
+        @foreach (var i in x)
+        {
+            @if (!string.IsNullOrEmpty(i))
+            {
+                <li> @i </li>
+            }
+        }
+        
+    }
+</ul>
+
+
