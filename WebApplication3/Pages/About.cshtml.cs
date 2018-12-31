@@ -11,19 +11,13 @@ namespace WebApplication3.Pages
         public string Message { get; set; }
         public string text { get; set; }
         public string[] words { get; set; }
-        public string[,] wordsAndSyn { get; set; }
-        public int outerIndex { get; set; }
-        public int innerIndex { get; set; }
-        public List<List<string>> test { get; set; }
+        public string[][] wordsAndSyn { get; set; }
 
         public void OnGet()
         {
             Message = "Your application description page.";
             words = new string[0];
-            wordsAndSyn = new string[0,0];
-            test = new List<List<string>>();
-            outerIndex = 0;
-            innerIndex = 0;
+            wordsAndSyn = new string[0][];
             /**
             @{
                 var totalMessage = "";
@@ -40,60 +34,81 @@ namespace WebApplication3.Pages
 
         public void OnPost()
         {
-            string text1 = Request.Form["text1"];
+            string text = Request.Form["text1"];
 
-            text = text1;
+            words = text.Split(' ');
 
-            words = text1.Split(' ');
+            string[] duplicateWords = GetDuplicatesInStringArray(words);
 
-            List<List<string>> testList = new List<List<string>>();
 
-            foreach(string word in words)
+            List<List<string>> wordList = new List<List<string>>();
+
+            foreach(string word in duplicateWords)
             {
                 List<string> oneWord = new List<string>();
                 oneWord.Add(word);
-                foreach(string syn in GetSynonyms(word))
+                string[] synList = GetSynonyms(word).ToArray();
+                synList = RemoveDuplicatesInStringArray(synList);
+
+                foreach(string syn in synList)
                 {
                     oneWord.Add(syn);
                 }
-                testList.Add(oneWord);
+                wordList.Add(oneWord);
             }
-            // convert it to a regular array when I go over so I can deal with getting element [0]
-            test = testList;
-            /**
-            foreach (string word in words)
+
+            wordsAndSyn = Convert2DListToArrayOfArrays(wordList);
+
+        }
+
+        public string[] RemoveDuplicatesInStringArray(string[] words)
+        {
+            List<string> wordList = new List<string>(words);
+            for(int i = 0; i < wordList.Count; i++)
             {
-                innerIndex = 0;
-                wordsAndSyn[outerIndex, innerIndex] = word;
-                innerIndex += 1;
-                foreach (var syn in GetSynonyms(word))
+                for(int j = 0; j < wordList.Count; j++)
                 {
-                    wordsAndSyn[outerIndex, innerIndex] = syn;
-                    innerIndex += 1;
-                }
-                outerIndex += 1;
-            }
-            **/
-
-
-
-            //foreach (string word in words)
-            //{
-            //    text += word + " ";
-            //}
-
-            /**
-            text = "";
-            foreach(var word in words)
-            {
-                text += ".random.";
-                foreach (var value in GetSynonyms(word))
-                {
-                    text += value + " ";
+                    if ((i != j) && (wordList[i].Equals(wordList[j])))
+                    {
+                        wordList.RemoveAt(i);
+                    }
                 }
             }
-            **/
+            string[] arrayWithoutDuplicates = wordList.ToArray();
+            return arrayWithoutDuplicates;
+        }
 
+        public string[] GetDuplicatesInStringArray(string[] words)
+        {
+            List<string> wordList = new List<string>(words);
+            List<string> duplicatesList = new List<string>();
+
+
+            for(int i = 0; i < wordList.Count; i++)
+            {
+                for(int j = 0; j < wordList.Count; j++)
+                {
+                    if((i != j) && (wordList[i].Equals(wordList[j])))
+                    {
+                        duplicatesList.Add(wordList[i]);
+                        wordList.RemoveAt(i);
+                    }
+                }
+            }
+            string[] duplicatesArray = duplicatesList.ToArray();
+            return duplicatesArray;
+        }
+
+        public string[][] Convert2DListToArrayOfArrays(List<List<string>> listTwo)
+        {
+            string[][] arrayOfArrays = new string[listTwo.Count][];
+            int index = 0;
+            foreach (var x in listTwo)
+            {
+                arrayOfArrays[index] = x.ToArray();
+                index++;
+            }
+            return arrayOfArrays;
         }
 
         public IEnumerable<string> GetSynonyms(string term)

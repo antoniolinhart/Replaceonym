@@ -23,19 +23,25 @@
 </form>
 
 <h1>@Model.text</h1>
-@{ List<List<string>> words = Model.test;}
+@{ string[][] wordsAndSyn = Model.wordsAndSyn;}
+
 <ul>
-    @foreach (var x in words)
-    {
-        @foreach (var i in x)
-        {
-            @if (!string.IsNullOrEmpty(i))
-            {
-                <li> @i </li>
-            }
-        }
-        
-    }
+    @foreach (var wordArray in wordsAndSyn)
+     {
+        <li>
+            @wordArray[0]
+            <ul>
+                @for(int i = 1; i < wordArray.Length; i++)
+                 {
+                    @if (!string.IsNullOrEmpty(wordArray[i]))
+                     {
+                        <li> @wordArray[i] </li>
+                     }
+                 }
+            </ul>
+        </li>
+
+     }
 </ul>
 
 
